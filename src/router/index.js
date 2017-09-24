@@ -8,6 +8,14 @@ import pack2 from '../page/reports/manual/pack2.vue'
 
 import newcard from '../page/cards/newcard.vue'
 import neworganize from '../page/organizes/neworganize.vue'
+import organizelist from '../page/organizes/organizelist.vue'
+import commentlist from '../page/organizes/commentlist.vue'
+
+import cardlist from '../page/cards/cardlist.vue'
+import classifylist from '../page/cards/classifylist.vue'
+import setClassify from '../page/cards/setClassify.vue'
+import cardsOrganizelist from '../page/cards/cardsOrganizelist.vue'
+import cardsOranList from '../page/cards/cardsOranList.vue'
 
 Vue.use(Router)
 
@@ -35,8 +43,29 @@ export default new Router({
       path: '/cards/newcard',
       component:newcard,
     },{
+      path: '/cards/cardlist',
+      component:cardlist,
+    },{
+      path: '/cards/classifylist',
+      component:classifylist,
+    },{
+      path: '/cards/setClassify',
+      component:setClassify,
+    },{
       path: '/organizes/neworganize',
       component:neworganize,
+    },{
+      path: '/organizes/organizelist',
+      component:organizelist,
+    },,{
+      path: '/organizes/commentlist',
+      component:commentlist,
+    },{
+      path: '/cardsOrganizelist',
+      component:cardsOrganizelist,
+    },{
+      path: '/cardsOranList',
+      component:cardsOranList,
     }
   ]
 })

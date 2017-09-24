@@ -7,6 +7,7 @@ import store from './store/'
 
 import axios from 'axios'
 import qs from 'qs'
+import 'font-awesome/css/font-awesome.min.css'
 
 // axios 配置
 axios.defaults.timeout = 5000;

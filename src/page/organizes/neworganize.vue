@@ -8,12 +8,40 @@
         <el-form-item label="机构ID" required >
             <el-input v-model.trim="form.oid" lazy></el-input>
         </el-form-item>
+       <!--  <el-form-item label="所在城市" required>
+            <el-autocomplete
+              class="inline-input"
+              v-model="form.city"
+              :fetch-suggestions=""
+              placeholder=""
+              :trigger-on-focus="false"
+              @select=""
+            ></el-autocomplete>
+        </el-form-item> -->
+        <el-form-item label="所在城市" required>
+              <el-select
+                v-model="city"
+                filterable
+                remote
+                placeholder="请输入城市名"
+                :remote-method="remoteMethod"
+                :loading="loading"
+                clearable>
+                <el-option
+                  v-for="item in options4"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+        </el-form-item>
 
         <el-form-item label="机构类型" required >
             <el-radio-group v-model="radio_type">
               <el-radio :label="4">公立医院</el-radio>
-              <el-radio :label="5">体检中心</el-radio>
-              <el-radio :label="6">专科医院</el-radio>
+              <el-radio :label="5">公立三甲</el-radio>
+              <el-radio :label="6">体检中心</el-radio>
+              <el-radio :label="7">专科医院</el-radio>
             </el-radio-group>
         </el-form-item>
 
@@ -40,7 +68,40 @@
               <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload>
         </el-form-item>
-
+        <el-form-item label="机构介绍" required >
+            <el-input
+              type="textarea"
+              :autosize="{ minRows: 2, maxRows: 4}"
+              placeholder="请输入内容"
+              v-model="introduce">
+            </el-input>
+        </el-form-item>
+        <el-form-item label="添加旗下套餐" required >
+            <el-row>
+              <el-col :span="4">
+                <el-select 
+                  v-model="form.package"
+                  clearable
+                  filterable 
+                  placeholder="请选择套餐">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+                </el-col>
+                <el-col :span="4">
+                  <el-input v-model.trim="form.price" placeholder="请输入套餐价格" lazy></el-input>
+                </el-col>
+                <el-col :span="4">
+                  <i class="el-icon-plus"></i>
+                </el-col>
+              <el-col :span="12"><div class="grid-content bg-purple-light"></div></el-col>
+            </el-row>
+        </el-form-item>
+          
         <el-form-item>
             <el-button type="primary" @click.native.prevent="onSubmit">提交</el-button>
         </el-form-item>
@@ -68,6 +129,8 @@
       // };
 
       return {
+        introduce:'',
+        city:'',
         radio_type: 4,
         disabledInput: false,
         disableButton: true,

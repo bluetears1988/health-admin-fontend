@@ -7,16 +7,23 @@
       <div class="main-left">
         <el-menu default-active="/reports/manual" class="el-menu-vertical-demo" :router="true">
           <el-submenu index="1">
-            <template slot="title">体检报告</template>
-            <el-menu-item index="/reports/manual/add" :class="{'isActive': !active}"><i class="el-icon-plus"></i>手工录入</el-menu-item>
+            <template slot="title"><i class="fa fa-clipboard"></i>体检报告</template>
+            <el-menu-item index="/reports/manual/add" :class="{'isActive': !active}"><!-- <i class="el-icon-plus"></i> -->手工录入</el-menu-item>
           </el-submenu>
           <el-submenu index="2">
-            <template slot="title">套餐信息</template>
-            <el-menu-item index="/cards/newcard" :class="{'isActive': !active}"><i class="el-icon-plus"></i>套餐录入</el-menu-item>
+            <template slot="title"><i class="fa fa-info"></i>套餐信息</template>
+            <el-menu-item index="/cards/newcard" :class="{'isActive': !active}"><!-- <i class="el-icon-plus"> --></i>套餐录入</el-menu-item>
+            <el-menu-item index="/cards/cardlist" :class="{'isActive': !active}"><!-- <i class="el-icon-setting"></i> -->套餐列表</el-menu-item>
+            <el-menu-item index="/cards/setClassify" :class="{'isActive': !active}"><!-- <i class="el-icon-plus"></i> -->设置分类</el-menu-item>
+            <el-menu-item index="/cards/classifylist" :class="{'isActive': !active}"><!-- <i class="el-icon-setting"></i> -->分类列表</el-menu-item>
+            <el-menu-item index="/cardsOrganizelist" :class="{'isActive': !active}"><!-- <i class="el-icon-setting"></i> -->添加套餐-机构</el-menu-item>
+            <el-menu-item index="/cardsOranList" :class="{'isActive': !active}"><!-- <i class="el-icon-setting"></i> -->套餐-机构列表</el-menu-item>
           </el-submenu>
           <el-submenu index="3">
-            <template slot="title">机构信息</template>
-            <el-menu-item index="/organizes/neworganize" :class="{'isActive': !active}"><i class="el-icon-plus"></i>机构录入</el-menu-item>
+            <template slot="title"><i class="fa fa-institution"></i>机构信息</template>
+            <el-menu-item index="/organizes/neworganize" :class="{'isActive': !active}"><!-- <i class="el-icon-plus"></i> -->机构录入</el-menu-item>
+            <el-menu-item index="/organizes/organizelist" :class="{'isActive': !active}"><!-- <i class="el-icon-setting"></i> -->机构列表</el-menu-item>
+            <el-menu-item index="/organizes/commentlist" :class="{'isActive': !active}"><!-- <i class="el-icon-setting"></i> -->用户评论</el-menu-item>
           </el-submenu>
           
          <!-- <el-menu-item index="/family" :class="{'isActive': !active}">一家人</el-menu-item>-->

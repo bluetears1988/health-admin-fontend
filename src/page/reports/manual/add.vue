@@ -9,6 +9,7 @@
 				<el-select v-model="reportForm.currentPack" placeholder="请选择体检套餐" :disabled="disabledInput">
 		            <el-option
 		              v-for="item in items"
+		              :key="item.id"
 		              :value="item.id"
 		              :label="item.name">
 		            </el-option>

@@ -8,35 +8,108 @@
         <el-form-item label="套餐ID" required >
             <el-input v-model.trim="form.pkgid" lazy></el-input>
         </el-form-item>
-
+        <el-form-item label="所在城市" required>
+              <el-select
+                v-model="city"
+                filterable
+                remote
+                multiple
+                placeholder="请输入城市名"
+                :remote-method="remoteMethod"
+                :loading="loading"
+                clearable>
+                <el-option
+                  v-for="item in options4"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+        </el-form-item>
         <el-form-item label="最低价格 （单位：元）" required>
             <el-input v-model.trim="form.bprice" lazy></el-input>
         </el-form-item>
         <el-form-item label="打折前价格 （单位：元）" required>
             <el-input v-model.trim="form.price" lazy></el-input>
         </el-form-item>
-
         <el-form-item label="适用性别" required >
             <el-radio-group v-model="radio_sexy">
-              <el-radio :label="3">不限</el-radio>
+              <el-radio :label="3">通用</el-radio>
               <el-radio :label="1">女</el-radio>
               <el-radio :label="2">男</el-radio>
             </el-radio-group>
         </el-form-item>
 
         <el-form-item label="适用人群" required>
-            <el-input v-model.trim="form.people" lazy></el-input>
+            <el-select 
+              v-model="form.people" 
+              placeholder="请选择" 
+              filterable
+              clearable>
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
         </el-form-item>
 
-        <el-form-item label="体检项目数 （单位：个）" required >
+        <el-form-item label="套餐特色" required>
+            <el-select 
+              v-model="form.feature" 
+              multiple 
+              filterable 
+              placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="体检项目个数 （单位：个）" required >
             <el-input v-model.trim="form.count" lazy number></el-input>
+        </el-form-item>
+         <el-form-item label="具体体检项目" required >
+            <el-select 
+              v-model="form.project" 
+              multiple 
+              filterable 
+              placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
         </el-form-item>
 
         <el-form-item label="开通机构数目 （单位：个）" required>
             <el-input v-model.trim="form.onum" :disabled="disabledInput" lazy number></el-input>
         </el-form-item>
-        <el-form-item label="开通机构举例(一个即可)" required>
-            <el-input v-model.trim="form.onm"></el-input>
+        <el-form-item label="具体开通机构" required>
+            <el-select 
+              v-model="form.orangizes" 
+              multiple 
+              filterable 
+              placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="套餐相关照片(最多三张)" required>
+            <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/">
+              <i class="el-icon-upload"></i>
+              <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+              <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
         </el-form-item>
 
         <el-form-item>
