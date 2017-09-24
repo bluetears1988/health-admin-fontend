@@ -9,10 +9,10 @@ import axios from 'axios'
 import qs from 'qs'
 import 'font-awesome/css/font-awesome.min.css'
 
-// axios 配置
+// // axios 配置
 axios.defaults.timeout = 5000;
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
-axios.defaults.baseURL = 'http://localhost:4000/';
+// axios.defaults.baseURL = 'http://localhost:4000/';
 
 //POST传参序列化
 axios.interceptors.request.use((config) => {
@@ -38,6 +38,7 @@ axios.interceptors.response.use((res) =>{
 });
 
 Vue.prototype.$ajax = axios;
+Vue.prototype.$qs = qs;
 
 Vue.config.productionTip = false;
 

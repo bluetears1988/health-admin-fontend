@@ -1,38 +1,35 @@
 <template>
     <div class="newcard">
       <el-form label-position="right" ref="form" :model="form" class="demo-form-stacked" :rules="rules">
-        <el-form-item label="套餐名字" required >
+        <el-form-item label="套餐名字" prop="pkgname" >
             <el-input v-model.trim="form.pkgname" lazy></el-input>
         </el-form-item>
 
         <el-form-item label="套餐ID" required >
             <el-input v-model.trim="form.pkgid" lazy></el-input>
         </el-form-item>
-        <el-form-item label="所在城市" required>
+        <el-form-item label="所在城市">
               <el-select
-                v-model="city"
+                v-model="form.city"
                 filterable
-                remote
                 multiple
                 placeholder="请输入城市名"
-                :remote-method="remoteMethod"
-                :loading="loading"
                 clearable>
                 <el-option
-                  v-for="item in options4"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  v-for="city in form.extra.cities"
+                  :key="city.value"
+                  :label="city.label"
+                  :value="city.value">
                 </el-option>
               </el-select>
         </el-form-item>
-        <el-form-item label="最低价格 （单位：元）" required>
+        <el-form-item label="最低价格 （单位：元）">
             <el-input v-model.trim="form.bprice" lazy></el-input>
         </el-form-item>
-        <el-form-item label="打折前价格 （单位：元）" required>
+        <el-form-item label="打折前价格 （单位：元）">
             <el-input v-model.trim="form.price" lazy></el-input>
         </el-form-item>
-        <el-form-item label="适用性别" required >
+        <el-form-item label="适用性别">
             <el-radio-group v-model="radio_sexy">
               <el-radio :label="3">通用</el-radio>
               <el-radio :label="1">女</el-radio>
@@ -40,71 +37,71 @@
             </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="适用人群" required>
+        <el-form-item label="适用人群">
             <el-select 
               v-model="form.people" 
               placeholder="请选择" 
               filterable
               clearable>
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                v-for="people in form.extra.people"
+                :key="people.value"
+                :label="people.label"
+                :value="people.value">
               </el-option>
             </el-select>
         </el-form-item>
 
-        <el-form-item label="套餐特色" required>
+        <el-form-item label="套餐特色">
             <el-select 
               v-model="form.feature" 
               multiple 
               filterable 
               placeholder="请选择">
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                v-for="feature in form.extra.features"
+                :key="feature.value"
+                :label="feature.label"
+                :value="feature.value">
               </el-option>
             </el-select>
         </el-form-item>
-        <el-form-item label="体检项目个数 （单位：个）" required >
+        <el-form-item label="体检项目个数 （单位：个）">
             <el-input v-model.trim="form.count" lazy number></el-input>
         </el-form-item>
-         <el-form-item label="具体体检项目" required >
+         <el-form-item label="具体体检项目">
             <el-select 
               v-model="form.project" 
               multiple 
               filterable 
               placeholder="请选择">
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                v-for="project in form.extra.projects"
+                :key="project.value"
+                :label="project.label"
+                :value="project.value">
               </el-option>
             </el-select>
         </el-form-item>
 
-        <el-form-item label="开通机构数目 （单位：个）" required>
-            <el-input v-model.trim="form.onum" :disabled="disabledInput" lazy number></el-input>
+        <el-form-item label="开通机构数目 （单位：个）">
+            <el-input v-model.trim="form.onum" lazy number></el-input>
         </el-form-item>
-        <el-form-item label="具体开通机构" required>
+        <el-form-item label="具体开通机构">
             <el-select 
               v-model="form.orangizes" 
               multiple 
               filterable 
               placeholder="请选择">
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                v-for="orangize in form.extra.orangizes"
+                :key="orangize.value"
+                :label="orangize.label"
+                :value="orangize.value">
               </el-option>
             </el-select>
         </el-form-item>
-        <el-form-item label="套餐相关照片(最多三张)" required>
+        <el-form-item label="套餐相关照片(最多三张)">
             <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/">
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -122,7 +119,7 @@
 <script>
   import { mapState, mapActions } from 'vuex'
   export default {
-    name: 'newcard',
+    name: 'newcardForm',
     data: function () {
       // var validators = {
       //     number: function (val) {
@@ -140,53 +137,20 @@
 
       return {
         radio_sexy:3,
-        disabledInput: false,
-        disableButton: true,
         form: {
-          shengao: '',
-          tizhong: '',
-          tizhongzhishu: '',
-          shousuoya: '',
-          shuzhangya: '',
-          textarea_g: ''
+          extra:{}
         },
-        form_status: {
-          shengao: true,
-          tizhong: true,
-          tizhongzhishu: true,
-          shousuoya: true,
-          shuzhangya: true
-        },
-        units:{
-          shengao: 'cm',
-          tizhong: 'Kg',
-          tizhongzhishu: '',
-          shousuoya: 'mmHg',
-          shuzhangya: 'mmHg',
-        },
-        // threshold:{
-        //   tizhongzhishu: {'min':18.5,'max':23.99},
-        //   shousuoya: {'min':90,'max':139},
-        //   shuzhangya: {'min':60,'max':89}
-        // },
         rules: {
-          shengao: [
-            {required:true,message:'请输入身高',trigger:'blur'},
-            // {validator:validators.number,message:'请输入数字',trigger:'blur'}
+          pkgname:[
+            {required:true,message:'请输入体检人姓名',trigger:'blur'}
           ],
-          tizhong: [
-            {required:true,message:'请输入体重',trigger:'blur'}
+          id:[
+            {required:true,message:'请输入体检报告ID',trigger:'blur'}
           ],
-          tizhongzhishu: [
-            {required:true,message:'请输入体重指数',trigger:'blur'}
-          ],
-          shousuoya: [
-            {required:true,message:'请输入收缩压',trigger:'blur'}
-          ],
-          shuzhangya: [
-            {required:true,message:'请输入舒张压',trigger:'blur'}
-          ],
-        }
+          shengao:[
+            {required:true,message:'请输入身高',trigger:'blur'}
+          ]
+        },
       }
     },
     props: ['currentPack'],
@@ -203,6 +167,13 @@
       'threshold'
     ]),
     methods: {
+      remoteMethod: function(){},
+      loading: function(){},
+      deleteExtra: function(json){
+          var j = JSON.parse(JSON.stringify(json));
+          delete j.extra;
+          return j;
+      },
       save: function(form){
         this.$refs.form.validate((valid) => {
           if (valid) {
@@ -222,35 +193,24 @@
           }
         });
       },
-      edit: function(){
-        this.disabledInput = false;
-        this.disableButton = true;
-      },
-      updateFormStatus: function(){
-        var threshold = this.threshold['pack' + this.currentPack];
-        // console.log(this.threshold);
-        for(var key in threshold){
-        // for(var key in this.threshold){
-          // var min =  this.threshold[key]['min'];
-          // var max =  this.threshold[key]['max'];
-          var min =  threshold[key]['min'];
-          var max =  threshold[key]['max'];
-          var val =  this.form[key];
-          this.form_status[key] = !(val > max || val < min);
-        }
-      },
-      addunit: function(obj){
-        this.updateFormStatus();
-        for(var key in obj){
-          if(this.units.hasOwnProperty(key)){
-            obj[key] += ' ' + this.units[key] + '#';
-          }
+      onSubmit: function(){
+        let form = this.$refs["form"];
+        console.dirxml(this.$qs.stringify(this.deleteExtra(this.form)));
+        form.validate((valid) => {
+          if (valid) {
+            this.$ajax.post('/api/cart', this.deleteExtra(this.form))
+                      .then(function (response) {
+                        console.log(response);
+                      })
+                      .catch(function (error) {
+                        console.log(error);
+                      });
 
-          if(this.form_status.hasOwnProperty(key)){
-            obj[key] += this.form_status[key];
+          } else {
+            console.log('error submit!!');
+            return false;
           }
-          // console.log(obj[key]);
-        }
+        });
       },
     created: function () {
     }
