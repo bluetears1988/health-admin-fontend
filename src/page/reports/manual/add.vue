@@ -1,8 +1,22 @@
 <template>
 	<div class="manual">
 		<el-form label-position="right" ref="reportForm" :model="reportForm" :rules="rules" class="demo-form-stacked">
-			<el-form-item label="体检报告ID" required prop="id">
+			<!-- <el-form-item label="体检报告ID" required prop="id">
 				<el-input v-model.trim="reportForm.id" :disabled="disabledInput" lazy></el-input>
+			</el-form-item> -->
+			<el-form-item label="体检人姓名" required prop="name">
+				<el-input v-model.trim="reportForm.name" :disabled="disabledInput" lazy></el-input>
+			</el-form-item>
+
+			<el-form-item label="体检机构" required>
+				<el-select v-model="reportForm.organize" placeholder="请选择体检机构" :disabled="disabledInput">
+		            <el-option
+		              v-for="item in items"
+		              :key="item.id"
+		              :value="item.id"
+		              :label="item.name">
+		            </el-option>
+		        </el-select>
 			</el-form-item>
 
 			<el-form-item label="体检套餐" required>
@@ -15,9 +29,14 @@
 		            </el-option>
 		        </el-select>
 			</el-form-item>
-			<el-form-item label="体检人姓名" required prop="name">
-				<el-input v-model.trim="reportForm.name" :disabled="disabledInput" lazy></el-input>
-			</el-form-item>
+			<el-form-item label="备注" prop="remarks">
+                <el-input
+                    type="textarea"
+                    :rows="2"
+                    placeholder=""
+                    v-model="reportForm.remarks">
+                </el-input>
+            </el-form-item>
 
 			<el-form-item>
 			    <el-button type="primary" @click.native.prevent="startAdd" :disabled="!disableButton">开始录入数据</el-button>

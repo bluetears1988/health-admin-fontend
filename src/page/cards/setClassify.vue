@@ -5,9 +5,9 @@
             <el-input v-model.trim="form.classname" lazy></el-input>
         </el-form-item>
 
-        <el-form-item label="分类ID" required >
+        <!-- <el-form-item label="分类ID" required >
             <el-input v-model.trim="form.classid" lazy></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="旗下套餐个数（单位：个）" required>
             <el-input v-model.trim="form.count" lazy number></el-input>
         </el-form-item>

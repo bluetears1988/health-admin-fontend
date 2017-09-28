@@ -5,9 +5,9 @@
             <el-input v-model.trim="form.oname" lazy></el-input>
         </el-form-item>
 
-        <el-form-item label="机构ID" required >
+        <!-- <el-form-item label="机构ID" required >
             <el-input v-model.trim="form.oid" lazy></el-input>
-        </el-form-item>
+        </el-form-item> -->
        <!--  <el-form-item label="所在城市" required>
             <el-autocomplete
               class="inline-input"
@@ -20,15 +20,12 @@
         </el-form-item> -->
         <el-form-item label="所在城市" required>
               <el-select
-                v-model="city"
+                v-model="form.city"
                 filterable
-                remote
                 placeholder="请输入城市名"
-                :remote-method="remoteMethod"
-                :loading="loading"
                 clearable>
                 <el-option
-                  v-for="item in options4"
+                  v-for="item in form.extra.city"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value">
@@ -53,10 +50,6 @@
             <el-input v-model.trim="form.phone" lazy></el-input>
         </el-form-item>
 
-        <el-form-item label="旗下体检套餐数 （单位：个）" required >
-            <el-input v-model.trim="form.num" lazy number></el-input>
-        </el-form-item>
-
         <el-form-item label="最低套餐价格" required>
             <el-input v-model.trim="form.bprice" lazy></el-input>
         </el-form-item>
@@ -73,8 +66,11 @@
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 4}"
               placeholder="请输入内容"
-              v-model="introduce">
+              v-model="form.introduce">
             </el-input>
+        </el-form-item>
+        <el-form-item label="旗下体检套餐数 （单位：个）" required >
+            <el-input v-model.trim="form.num" lazy number></el-input>
         </el-form-item>
         <el-form-item label="添加旗下套餐" required >
             <el-row>
@@ -85,7 +81,7 @@
                   filterable 
                   placeholder="请选择套餐">
                   <el-option
-                    v-for="item in options"
+                    v-for="item in form.extra.cards"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
@@ -140,7 +136,8 @@
           tizhongzhishu: '',
           shousuoya: '',
           shuzhangya: '',
-          textarea_g: ''
+          textarea_g: '',
+          extra:{}
         },
         form_status: {
           shengao: true,
