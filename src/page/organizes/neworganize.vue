@@ -1,8 +1,8 @@
 <template>
     <div class="newcard">
       <el-form label-position="right" ref="form" :model="form" class="demo-form-stacked" :rules="rules">
-        <el-form-item label="机构名字" required >
-            <el-input v-model.trim="form.oname" lazy></el-input>
+        <el-form-item label="机构名字" required prop="name">
+            <el-input v-model.trim="form.name" lazy></el-input>
         </el-form-item>
 
         <!-- <el-form-item label="机构ID" required >
@@ -25,16 +25,16 @@
                 placeholder="请输入城市名"
                 clearable>
                 <el-option
-                  v-for="item in form.extra.city"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  v-for="item in form.extra.cities"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.code">
                 </el-option>
               </el-select>
         </el-form-item>
 
         <el-form-item label="机构类型" required >
-            <el-radio-group v-model="radio_type">
+            <el-radio-group v-model="form.type">
               <el-radio :label="4">公立医院</el-radio>
               <el-radio :label="5">公立三甲</el-radio>
               <el-radio :label="6">体检中心</el-radio>
@@ -47,7 +47,7 @@
         </el-form-item>
         
         <el-form-item label="联系电话" required>
-            <el-input v-model.trim="form.phone" lazy></el-input>
+            <el-input v-model.trim="form.telephone" lazy></el-input>
         </el-form-item>
 
         <el-form-item label="最低套餐价格" required>
@@ -127,31 +127,9 @@
       return {
         introduce:'',
         city:'',
-        radio_type: 4,
-        disabledInput: false,
-        disableButton: true,
         form: {
-          shengao: '',
-          tizhong: '',
-          tizhongzhishu: '',
-          shousuoya: '',
-          shuzhangya: '',
-          textarea_g: '',
+          type: 4,
           extra:{}
-        },
-        form_status: {
-          shengao: true,
-          tizhong: true,
-          tizhongzhishu: true,
-          shousuoya: true,
-          shuzhangya: true
-        },
-        units:{
-          shengao: 'cm',
-          tizhong: 'Kg',
-          tizhongzhishu: '',
-          shousuoya: 'mmHg',
-          shuzhangya: 'mmHg',
         },
         // threshold:{
         //   tizhongzhishu: {'min':18.5,'max':23.99},
@@ -159,39 +137,56 @@
         //   shuzhangya: {'min':60,'max':89}
         // },
         rules: {
-          shengao: [
-            {required:true,message:'请输入身高',trigger:'blur'},
-            // {validator:validators.number,message:'请输入数字',trigger:'blur'}
-          ],
-          tizhong: [
-            {required:true,message:'请输入体重',trigger:'blur'}
-          ],
-          tizhongzhishu: [
-            {required:true,message:'请输入体重指数',trigger:'blur'}
-          ],
-          shousuoya: [
-            {required:true,message:'请输入收缩压',trigger:'blur'}
-          ],
-          shuzhangya: [
-            {required:true,message:'请输入舒张压',trigger:'blur'}
-          ],
-        }
+          name:[
+            {required:true,message:'必填项',trigger:'blur'}
+          ]
+        },
       }
     },
-    props: ['currentPack'],
-    filters: {
-      // filter_area: function (val, min, max){
-      //     return !(val > max || val < min);
-      // }
-    },
-    watch: {
-      // 'form.tizhongzhishu': 'updateFormStatus("tizhongzhishu", )',
-    },
-    computed: mapState([
-      // threshold: state => state.threshold['pack' + this.currentPack],
-      'threshold'
-    ]),
     methods: {
+      deleteExtra: function(json){
+          var j = JSON.parse(JSON.stringify(json));
+          delete j.extra;
+          return j;
+      },
+      onSubmit: function(){
+        let form = this.$refs["form"];
+        console.dirxml(this.$qs.stringify(this.deleteExtra(this.form)));
+        form.validate((valid) => {
+          if (valid) {
+            this.$ajax.post('/api/institution', this.deleteExtra(this.form))
+                      .then(function (response) {
+                        console.log(response);
+                      })
+                      .catch(function (error) {
+                        console.log(error);
+                      });
+
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      initPage(){
+        var that = this;
+        this.$ajax.all([
+            this.$ajax.get('/api/cities'),
+            this.$ajax.get('/api/card'),
+          ])
+        .then(this.$ajax.spread(function (cityResp, cardResp) {
+            // 上面两个请求都完成后，才执行这个回调方法
+          that.form = {extra:{cities:cityResp.data.data},
+                        city:'',
+                        type:'',
+                        name:'',
+                        address:'',
+                        bprice:'',
+                        telephone:'',
+                        introduce:'',
+                        num:'',};
+        }));
+      },
       save: function(form){
         this.$refs.form.validate((valid) => {
           if (valid) {
@@ -215,35 +210,10 @@
         this.disabledInput = false;
         this.disableButton = true;
       },
-      updateFormStatus: function(){
-        var threshold = this.threshold['pack' + this.currentPack];
-        // console.log(this.threshold);
-        for(var key in threshold){
-        // for(var key in this.threshold){
-          // var min =  this.threshold[key]['min'];
-          // var max =  this.threshold[key]['max'];
-          var min =  threshold[key]['min'];
-          var max =  threshold[key]['max'];
-          var val =  this.form[key];
-          this.form_status[key] = !(val > max || val < min);
-        }
-      },
-      addunit: function(obj){
-        this.updateFormStatus();
-        for(var key in obj){
-          if(this.units.hasOwnProperty(key)){
-            obj[key] += ' ' + this.units[key] + '#';
-          }
-
-          if(this.form_status.hasOwnProperty(key)){
-            obj[key] += this.form_status[key];
-          }
-          // console.log(obj[key]);
-        }
-      },
+    },
     created: function () {
+      this.initPage();
     }
-  }
 }
 </script>
 <style>

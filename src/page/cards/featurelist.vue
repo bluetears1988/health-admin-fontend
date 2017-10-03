@@ -1,6 +1,6 @@
 <template>
 <el-table :data="page.content"  v-loading="pageLoading" stripe border style="width: 100%">
-    <el-table-column prop="id" label="ID" sortable></el-table-column>
+    <el-table-column prop="_id" label="ID" sortable></el-table-column>
     <el-table-column prop="name" label="特点叫法" ></el-table-column>
     <el-table-column prop="details" label="特点详情" ></el-table-column>
     <el-table-column label="操作">
@@ -22,6 +22,18 @@ export default {
             pageLoading: false
         }
     },
+    methods: {
+        initPage(){
+            var that = this;
+            this.$ajax.get('/api/feature').then((response) => {
+                that.page = {content:response.data.data};
+                console.dirxml(that.page.content);
+            })
+        }
+    },
+    created: function () {
+      this.initPage();
+    }
 }
 </script>
 <style>

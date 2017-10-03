@@ -17,15 +17,15 @@
         </el-form-item>
         <el-form-item label="所在城市">
               <el-select
-                v-model="form.code"
+                v-model="form.city"
                 filterable
                 placeholder="请输入城市名"
                 clearable>
                 <el-option
                   v-for="city in form.extra.cities"
-                  :key="city.value"
-                  :label="city.label"
-                  :value="city.value">
+                  :key="city.code"
+                  :label="city.name"
+                  :value="city.code">
                 </el-option>
               </el-select>
         </el-form-item>
@@ -49,13 +49,12 @@
             <el-select 
               v-model="form.feature" 
               multiple 
-              filterable 
               placeholder="请选择">
               <el-option
                 v-for="feature in form.extra.features"
-                :key="feature.value"
-                :label="feature.label"
-                :value="feature.value">
+                :key="feature.name"
+                :label="feature.name"
+                :value="feature.name">
               </el-option>
             </el-select>
         </el-form-item>
@@ -74,13 +73,12 @@
             <el-select 
               v-model="form.project" 
               multiple 
-              filterable 
               placeholder="请选择">
               <el-option
                 v-for="project in form.extra.projects"
-                :key="project.value"
-                :label="project.label"
-                :value="project.value">
+                :key="project.name"
+                :label="project.name"
+                :value="project.name">
               </el-option>
             </el-select>
         </el-form-item>
@@ -152,19 +150,6 @@
         },
       }
     },
-    props: ['currentPack'],
-    filters: {
-      // filter_area: function (val, min, max){
-      //     return !(val > max || val < min);
-      // }
-    },
-    watch: {
-      // 'form.tizhongzhishu': 'updateFormStatus("tizhongzhishu", )',
-    },
-    computed: mapState([
-      // threshold: state => state.threshold['pack' + this.currentPack],
-      'threshold'
-    ]),
     methods: {
       remoteMethod: function(){},
       loading: function(){},
@@ -178,7 +163,7 @@
         console.dirxml(this.$qs.stringify(this.deleteExtra(this.form)));
         form.validate((valid) => {
           if (valid) {
-            this.$ajax.post('/api/cart', this.deleteExtra(this.form))
+            this.$ajax.post('/api/card', this.deleteExtra(this.form))
                       .then(function (response) {
                         console.log(response);
                       })
@@ -192,17 +177,29 @@
           }
         });
       },initPage(){
-          this.$ajax.get('/api/cities').then((response) => {
-              this.inputForm = response.data;
-              // if(this.isCreate) {
-              //     this.submitDisabled = false;
-              // } else {
-              //     $http.get('/api/sys/dictEnum/findOne', {params: {id: this.$route.query.id}}).then((response) => {
-              //         $util.page.copyValue(response.data,this.inputForm);
-              //         this.submitDisabled = false;
-              //     })
-              // }
-            })
+            var that = this;
+            this.$ajax.all([
+                this.$ajax.get('/api/cities'),
+                this.$ajax.get('/api/project'),
+                this.$ajax.get('/api/feature')
+              ])
+            .then(this.$ajax.spread(function (cityResp, projectResp, featureResp) {
+                // 上面两个请求都完成后，才执行这个回调方法
+
+              that.form = {extra:{cities:cityResp.data.data,projects:projectResp.data.data,
+                                  features:featureResp.data.data},
+                            city:'',
+                            people:'',
+                            name:'',
+                            gender:'',
+                            feature:[],
+                            bprice:'',
+                            price:'',
+                            projectNum:'',
+                            project:[],
+                            institutionNum:'',
+                            institutions:'', };
+            }));
           }
       },
     created: function () {

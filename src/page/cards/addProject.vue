@@ -10,7 +10,7 @@
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 4}"
               placeholder="请输入内容"
-              v-model="form.content">
+              v-model.trim="form.content">
             </el-input>
         </el-form-item>
 
@@ -19,7 +19,7 @@
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 4}"
               placeholder="请输入内容"
-              v-model="form.aim">
+              v-model.trim="form.aim">
             </el-input>
         </el-form-item>
 
@@ -76,7 +76,7 @@
         console.dirxml(this.$qs.stringify(this.deleteExtra(this.form)));
         form.validate((valid) => {
           if (valid) {
-            this.$ajax.post('/api/cities', this.deleteExtra(this.form))
+            this.$ajax.post('/api/project', this.deleteExtra(this.form))
                       .then(function (response) {
                         console.log(response);
                       })

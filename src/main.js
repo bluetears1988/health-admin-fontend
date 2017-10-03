@@ -27,7 +27,7 @@ axios.interceptors.request.use((config) => {
 
 //返回状态判断
 axios.interceptors.response.use((res) =>{
-    if(!res.data.success){
+    if(res.data.meta.code){
         // _.toast(res.data.msg);
         return Promise.reject(res);
     }

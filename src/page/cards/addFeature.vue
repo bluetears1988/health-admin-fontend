@@ -64,7 +64,7 @@
         console.dirxml(this.$qs.stringify(this.deleteExtra(this.form)));
         form.validate((valid) => {
           if (valid) {
-            this.$ajax.post('/api/cities', this.deleteExtra(this.form))
+            this.$ajax.post('/api/feature', this.deleteExtra(this.form))
                       .then(function (response) {
                         console.log(response);
                       })
