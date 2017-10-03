@@ -7,8 +7,8 @@
     <el-table-column prop="pcode" label="上一级城市编号" ></el-table-column>
     <el-table-column label="操作">
         <template scope="scope">
-            <el-button size="small" >修改</el-button>
-            <el-button type="danger" size="small">删除</el-button>
+            <el-button size="small" @click.native="itemAction(scope.row._id,'edit')" >修改</el-button>
+            <el-button type="danger" size="small" @click.native="itemAction(scope.row._id,'delete')">删除</el-button>
         </template>
     </el-table-column>
 </el-table>
@@ -31,7 +31,18 @@ export default {
                 that.page = {content:response.data.data};
                 console.dirxml(that.page.content);
             })
-        }
+        },itemAction:function(id, action){
+                if(action=="edit") {
+                    // this.$router.push({ name: 'productBoxForm', query: { id: id }})
+                } else if(action=="delete") {
+                    this.confirmDelete().then(() => {
+                        $http.delete('/api/cities',{params:{id:id}}).then((response) =>{
+                            // this.$message($util.message.toLocale(this,response.data));
+                            // this.pageRequest();
+                        });
+                    }).catch();
+                }
+            }
     },
     created: function () {
       this.initPage();
