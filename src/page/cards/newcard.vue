@@ -90,13 +90,12 @@
             <el-select 
               v-model="form.institutions" 
               multiple 
-              filterable 
               placeholder="请选择">
               <el-option
                 v-for="institution in form.extra.institutions"
-                :key="institution.value"
-                :label="institution.label"
-                :value="institution.value">
+                :key="institution.name"
+                :label="institution.name"
+                :value="institution.name">
               </el-option>
             </el-select>
         </el-form-item>
@@ -181,13 +180,15 @@
             this.$ajax.all([
                 this.$ajax.get('/api/cities'),
                 this.$ajax.get('/api/project'),
-                this.$ajax.get('/api/feature')
+                this.$ajax.get('/api/feature'),
+                this.$ajax.get('/api/institution')
               ])
-            .then(this.$ajax.spread(function (cityResp, projectResp, featureResp) {
+            .then(this.$ajax.spread(function (cityResp, projectResp, featureResp, instiResp) {
                 // 上面两个请求都完成后，才执行这个回调方法
 
               that.form = {extra:{cities:cityResp.data.data,projects:projectResp.data.data,
-                                  features:featureResp.data.data},
+                                  features:featureResp.data.data,
+                                  institutions:instiResp.data.data},
                             city:'',
                             people:'',
                             name:'',
@@ -198,7 +199,7 @@
                             projectNum:'',
                             project:[],
                             institutionNum:'',
-                            institutions:'', };
+                            institutions:[], };
             }));
           }
       },
