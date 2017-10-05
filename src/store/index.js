@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import * as actions from './actions.js'
-import * as mutations from './mutations.js'
+// import * as actions from './actions.js'
+// import * as mutations from './mutations.js'
 
 Vue.use(Vuex)
 
@@ -16,7 +16,27 @@ const threshold = {
 }
 
 const state = {
-    threshold: threshold
+    threshold: threshold,
+    cards: [],
+    orgs:[]
+}
+
+const mutations = {
+	setCards(state, cards){
+		state.cards = cards
+	},
+	setOrgs(state, orgs){
+		state.orgs = orgs
+	}
+}
+
+const actions = {
+	setCards({commit, state}, cards){
+		commit('setCards', cards)
+	},
+	setOrgs({commit, state},  orgs){
+		commit('setOrgs', orgs)
+	}
 }
 
 export default new Vuex.Store({

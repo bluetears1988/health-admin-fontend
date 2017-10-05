@@ -1,7 +1,7 @@
 <template>
     <div class="newcard">
       <el-form label-position="right" ref="form" :model="form" class="demo-form-stacked" :rules="rules">
-        <el-form-item label="套餐名字" prop="pkgname" >
+        <el-form-item label="套餐名字" prop="name" >
             <el-input v-model.trim="form.name" lazy></el-input>
         </el-form-item>
 
@@ -20,12 +20,13 @@
                 v-model="form.city"
                 filterable
                 placeholder="请输入城市名"
-                clearable>
+                clearable
+                @change="orgInit">
                 <el-option
                   v-for="city in form.extra.cities"
-                  :key="city.code"
+                  :key="city.name"
                   :label="city.name"
-                  :value="city.code">
+                  :value="city.name">
                 </el-option>
               </el-select>
         </el-form-item>
@@ -64,8 +65,6 @@
         <el-form-item label="打折前价格 （单位：元）">
             <el-input v-model.trim="form.price" lazy></el-input>
         </el-form-item>
-      
-        
         <el-form-item label="体检项目个数 （单位：个）">
             <el-input v-model.trim="form.projectNum" lazy number></el-input>
         </el-form-item>
@@ -92,7 +91,7 @@
               multiple 
               placeholder="请选择">
               <el-option
-                v-for="institution in form.extra.institutions"
+                v-for="institution in orgs"
                 :key="institution.name"
                 :label="institution.name"
                 :value="institution.name">
@@ -140,11 +139,8 @@
           gender:3
         },
         rules: {
-          pkgname:[
-            {required:true,message:'请输入套餐名称',trigger:'blur'}
-          ],
-          pkgid:[
-            {required:true,message:'请输入套餐ID',trigger:'blur'}
+          name:[
+            {required:true,message:'必填项',trigger:'blur'}
           ]
         },
       }
@@ -158,51 +154,85 @@
           return j;
       },
       onSubmit: function(){
+        var that = this;
         let form = this.$refs["form"];
         console.dirxml(this.$qs.stringify(this.deleteExtra(this.form)));
         form.validate((valid) => {
           if (valid) {
-            this.$ajax.post('/api/card', this.deleteExtra(this.form))
+            if(this.$route.query.id){
+              this.$ajax.put('/api/card/' + this.$route.query.id, this.deleteExtra(this.form))
                       .then(function (response) {
                         console.log(response);
+                        that.$router.push({ name: 'cardlist'})
                       })
                       .catch(function (error) {
                         console.log(error);
                       });
 
+            }else{
+              this.$ajax.post('/api/card', this.deleteExtra(this.form))
+                      .then(function (response) {
+                        console.log(response);
+                        that.$router.push({ name: 'cardlist'})
+                      })
+                      .catch(function (error) {
+                        console.log(error);
+                      });
+            }
           } else {
             console.log('error submit!!');
             return false;
           }
         });
       },initPage(){
-            var that = this;
-            this.$ajax.all([
-                this.$ajax.get('/api/cities'),
-                this.$ajax.get('/api/project'),
-                this.$ajax.get('/api/feature'),
-                this.$ajax.get('/api/institution')
-              ])
-            .then(this.$ajax.spread(function (cityResp, projectResp, featureResp, instiResp) {
-                // 上面两个请求都完成后，才执行这个回调方法
-
-              that.form = {extra:{cities:cityResp.data.data,projects:projectResp.data.data,
-                                  features:featureResp.data.data,
-                                  institutions:instiResp.data.data},
-                            city:'',
-                            people:'',
-                            name:'',
-                            gender:'',
-                            feature:[],
-                            bprice:'',
-                            price:'',
-                            projectNum:'',
-                            project:[],
-                            institutionNum:'',
-                            institutions:[], };
-            }));
+        var that = this;
+        this.$ajax.all([
+            this.$ajax.get('/api/cities',{params:{grade:2}}),
+            this.$ajax.get('/api/project'),
+            this.$ajax.get('/api/feature'),
+            // this.$ajax.get('/api/institution')
+          ])
+        .then(this.$ajax.spread(function (cityResp, projectResp, featureResp) {
+            // 上面两个请求都完成后，才执行这个回调方法
+          that.form = {extra:{cities:cityResp.data.data,projects:projectResp.data.data,
+                              features:featureResp.data.data,
+                              },
+                        city:'',
+                        people:'',
+                        name:'',
+                        gender:'',
+                        feature:[],
+                        bprice:'',
+                        price:'',
+                        projectNum:'',
+                        project:[],
+                        institutionNum:'',
+                        institutions:[], };
+          var queryId = that.$route.query.id;
+          if(queryId){
+            that.$ajax.get('/api/card',{params:{_id:queryId}}).then((response) =>{
+              // console.dirxml(response.data.data);
+              Object.assign(that.form, response.data.data[0]);
+            });
+            // Object.assign(that.form.extra, {institutions:response.data.data});
           }
+
+          console.dirxml(that.form);
+        }
+        ));
+        
       },
+      orgInit(opt){
+        var that = this;
+        this.$ajax.get('/api/institution',{params:{city:opt}}).then((response) =>{
+          // Object.assign(that.form.extra, {institutions:response.data.data});
+          that.$store.dispatch('setOrgs', response.data.data);
+        });
+      },
+    },
+    computed: mapState({
+      orgs: state => state.orgs,
+    }),
     created: function () {
       this.initPage();
     }

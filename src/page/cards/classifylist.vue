@@ -1,13 +1,13 @@
 <template>
 <el-table :data="page.content"  v-loading="pageLoading" stripe border style="width: 100%">
-    <el-table-column prop="id" label="分类ID" sortable></el-table-column>
-    <el-table-column prop="nm" label="分类名字" ></el-table-column>
-    <el-table-column prop="count" label="套餐个数" ></el-table-column>
-    <el-table-column prop="pkg" label="套餐列表" ></el-table-column>
+    <!-- <el-table-column prop="id" label="分类ID" sortable></el-table-column> -->
+    <el-table-column prop="name" label="分类名字" ></el-table-column>
+    <el-table-column prop="pkgNum" label="套餐个数" ></el-table-column>
+    <el-table-column prop="pkgs" label="套餐列表" ></el-table-column>
     <el-table-column label="操作">
         <template scope="scope">
-            <el-button size="small" >修改</el-button>
-            <el-button type="danger" size="small">删除</el-button>
+            <!-- <el-button size="small" @click.native="itemAction(scope.row._id,'edit')" >修改</el-button> -->
+            <el-button type="danger" size="small" @click.native="itemAction(scope.row._id,'delete')">删除</el-button>
         </template>
     </el-table-column>
 </el-table>
@@ -23,6 +23,30 @@ export default {
             pageLoading: false
         }
     },
+    methods: {
+        initPage(){
+            var that = this;
+            this.$ajax.get('/api/classify').then((response) => {
+                that.page = {content:response.data.data};
+                console.dirxml(that.page.content);
+            })
+        },
+        itemAction:function(id, action){
+                if(action=="edit") {
+                    // this.$router.push({ name: 'productBoxForm', query: { id: id }})
+                } else if(action=="delete") {
+                    this.confirmDelete().then(() => {
+                        this.$ajax.delete('/api/classify/'+ id).then((response) =>{
+                            // this.$message($util.message.toLocale(this,response.data));
+                            // this.pageRequest();
+                        });
+                    }).catch();
+                }
+            }
+    },
+    created: function () {
+      this.initPage();
+    }
 }
 </script>
 <style>

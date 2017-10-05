@@ -31,78 +31,33 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
+    {path: '/',name: 'Hello',component: Hello},
     {
-      path: '/',
-      name: 'Hello',
-      component: Hello
-    },{
-    	path: '/reports/manual/add',
-    	component:add,
-    	children:[{
-    			path: '/pack1',
-    			component:pack1,
-    		},{
-    			path: '/pack2',
-    			component:pack2
-    		},{
-    			path: '/page/:pack_id',
-    			component:pack2
-    		}
+      path: '/reports/manual/add',
+      component:add,
+    	children:[
+        {path: '/pack1',component:pack1,},
+        {path: '/pack2',component:pack2},
+        {path: '/page/:pack_id',component:pack2}
     	]
-    },{
-      path: '/reports/reportlist',
-      component:reportlist,
-    },{
-      path: '/cards/newcard',
-      component:newcard,
-    },{
-      path: '/cards/cardlist',
-      component:cardlist,
-    },{
-      path: '/cards/classifylist',
-      component:classifylist,
-    },{
-      path: '/cards/setClassify',
-      component:setClassify,
-    },{
-      path: '/cards/otherInfo',
-      component:otherInfo,
-    },{
-      path: '/organizes/neworganize',
-      component:neworganize,
-    },{
-      path: '/organizes/organizelist',
-      component:organizelist,
-    },,{
-      path: '/organizes/commentlist',
-      component:commentlist,
-    },{
-      path: '/cardsOrganizelist',
-      component:cardsOrganizelist,
-    },{
-      path: '/cardsOranList',
-      component:cardsOranList,
-    },{
-      path: '/city',
-      component:city,
-    },{
-      path: '/citylist',
-      component:citylist,
-    },{
-      path: '/cards/addFeature',
-      component:addFeature,
-    },{
-      path: '/cards/addProject',
-      component:addProject,
-    },{
-      path: '/cards/featurelist',
-      component:featurelist,
-    },{
-      path: '/cards/projectlist',
-      component:projectlist,
-    },{
-      path: '/orders/orderlist',
-      component:orderlist,
-    }
+    },
+    {path: '/reports/reportlist',component:reportlist,name:'reportlist'},
+    {path: '/cards/newcard',component:newcard,name:'newcard'},
+    {path: '/cards/cardlist',component:cardlist,name:'cardlist'},
+    {path: '/cards/classifylist',component:classifylist,name:'classifylist'},
+    {path: '/cards/setClassify',component:setClassify,name:'setClassify'},
+    {path: '/cards/otherInfo',component:otherInfo,name:'otherInfo'},
+    {path: '/organizes/neworganize',component:neworganize,name:'neworganize'},
+    {path: '/organizes/organizelist',component:organizelist,name:'organizelist'},
+    {path: '/organizes/commentlist',component:commentlist,name:'commentlist'},
+    {path: '/cardsOrganizelist',component:cardsOrganizelist,name:'cardsOrganizelist'},
+    {path: '/cardsOranList',component:cardsOranList,name:'cardsOranList'},
+    {path: '/city',component:city,name:'city'},
+    {path: '/citylist',component:citylist,name:'citylist'},
+    {path: '/cards/addFeature',component:addFeature,name:'addFeature'},
+    {path: '/cards/addProject',component:addProject,name:'addProject'},
+    {path: '/cards/featurelist',component:featurelist,name:'featurelist'},
+    {path: '/cards/projectlist',component:projectlist,name:'projectlist'},
+    {path: '/orders/orderlist',component:orderlist,name:'orderlist'}
   ]
 })

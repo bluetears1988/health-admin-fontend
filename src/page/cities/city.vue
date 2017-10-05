@@ -73,6 +73,7 @@
           return j;
       },
       onSubmit: function(){
+        var that = this;
         let form = this.$refs["form"];
         console.dirxml(this.$qs.stringify(this.deleteExtra(this.form)));
         form.validate((valid) => {
@@ -80,6 +81,7 @@
             this.$ajax.post('/api/cities', this.deleteExtra(this.form))
                       .then(function (response) {
                         console.log(response);
+                        that.$router.push({ name: 'citylist'})
                       })
                       .catch(function (error) {
                         console.log(error);

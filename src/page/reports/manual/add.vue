@@ -52,6 +52,7 @@
 </template>
 
 <script>
+
 export default {
 	name: 'add',
 	data: function(){
