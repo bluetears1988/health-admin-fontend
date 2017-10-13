@@ -68,10 +68,15 @@
             this.$ajax.post('/api/feature', this.deleteExtra(this.form))
                       .then(function (response) {
                         console.log(response);
+                        that.$message({
+                          message: '添加成功！',
+                          type: 'success'
+                        });
                         that.$router.push({ name: 'featurelist'})
                       })
                       .catch(function (error) {
                         console.log(error);
+                        that.$message.error(error);
                       });
 
           } else {

@@ -160,9 +160,14 @@
               this.$ajax.put('/api/institution/' + this.$route.query.id, this.deleteExtra(this.form))
                       .then(function (response) {
                         console.log(response);
+                        that.$message({
+                          message: '添加成功！',
+                          type: 'success'
+                        });
                         that.$router.push({ name: 'organizelist'})
                       })
                       .catch(function (error) {
+                        that.$message.error(error);
                         console.log(error);
                       });
 

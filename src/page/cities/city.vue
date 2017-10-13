@@ -81,9 +81,14 @@
             this.$ajax.post('/api/cities', this.deleteExtra(this.form))
                       .then(function (response) {
                         console.log(response);
+                        that.$message({
+                          message: '添加成功！',
+                          type: 'success'
+                        });
                         that.$router.push({ name: 'citylist'})
                       })
                       .catch(function (error) {
+                        that.$message.error(error);
                         console.log(error);
                       });
 

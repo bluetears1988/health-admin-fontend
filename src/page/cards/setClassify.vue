@@ -96,10 +96,15 @@ export default {
           if (valid) {
             this.$ajax.post('/api/classify', this.deleteExtra(this.form))
                       .then(function (response) {
+                        that.$message({
+                          message: '添加成功！',
+                          type: 'success'
+                        });
                         console.log(response);
                       })
                       .catch(function (error) {
                         console.log(error);
+                        that.$message.error(error);
                       });
           } else {
             console.log('error submit!!');
