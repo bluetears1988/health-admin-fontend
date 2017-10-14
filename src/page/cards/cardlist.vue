@@ -1,6 +1,6 @@
 <template>
 <el-table :data="page.content"  v-loading="pageLoading" stripe border style="width: 100%">
-    <el-table-column prop="_id" label="套餐ID" sortable></el-table-column>
+    <!-- <el-table-column prop="_id" label="套餐ID" sortable></el-table-column> -->
     <el-table-column prop="name" label="套餐名字" ></el-table-column>
     <el-table-column prop="city" label="开通城市" ></el-table-column>
     <el-table-column prop="people" label="适用人群" ></el-table-column>

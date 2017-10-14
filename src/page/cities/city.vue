@@ -9,15 +9,15 @@
             <el-input v-model.trim="form.id" lazy></el-input>
         </el-form-item> -->
 
-        <el-form-item label="城市编号" required prop="code">
+        <el-form-item label="城市行政区划代码" required prop="code">
             <el-input v-model.trim="form.code" lazy></el-input>
         </el-form-item>
 
-        <el-form-item label="城市层级" required prop="grade">
-            <el-input v-model.trim="form.grade" lazy></el-input>
+        <el-form-item label="城市层级（0/1/2/3）" required prop="grade">
+            <el-input v-model.trim="form.grade" lazy number></el-input>
         </el-form-item>
 
-        <el-form-item label="父城市编号" required prop="pcode">
+        <el-form-item label="父城市行政区划代码" required prop="pcode">
             <el-input v-model.trim="form.pcode" lazy></el-input>
         </el-form-item>
 
@@ -45,7 +45,7 @@
             {required:true,message:'必填',trigger:'blur'}
           ],
           grade:[
-            {required:true,message:'必填',trigger:'blur'}
+            {required:true,message:'必填',}
           ],
           pcode:[
             {required:true,message:'必填',trigger:'blur'}
@@ -78,7 +78,22 @@
         console.dirxml(this.$qs.stringify(this.deleteExtra(this.form)));
         form.validate((valid) => {
           if (valid) {
-            this.$ajax.post('/api/cities', this.deleteExtra(this.form))
+            if(this.$route.query.id){
+              this.$ajax.put('/api/cities/' + this.$route.query.id, this.deleteExtra(this.form))
+                      .then(function (response) {
+                        console.log(response);
+                        that.$message({
+                          message: '更新成功！',
+                          type: 'success'
+                        });
+                        that.$router.push({ name: 'citylist'})
+                      })
+                      .catch(function (error) {
+                        // that.$message.error(error);
+                        console.log(error);
+                      });
+            }else{
+              this.$ajax.post('/api/cities', this.deleteExtra(this.form))
                       .then(function (response) {
                         console.log(response);
                         that.$message({
@@ -88,18 +103,32 @@
                         that.$router.push({ name: 'citylist'})
                       })
                       .catch(function (error) {
-                        that.$message.error(error);
+                        // that.$message.error(error);
                         console.log(error);
                       });
-
+            }
           } else {
             console.log('error submit!!');
             return false;
           }
         });
       },
-    created: function () {
-    }
+      initPage(){
+        var that = this;
+        var queryId = that.$route.query.id;
+        if(queryId){
+          that.$ajax.get('/api/cities',{params:{_id:queryId}}).then((response) =>{
+            console.dirxml(response.data.data);
+            // Object.assign(that.form, response.data.data[0]);
+            that.form = response.data.data[0];
+            console.dirxml(that.form);
+          });
+          // Object.assign(that.form.extra, {institutions:response.data.data});
+        }
+      }
+  },
+  created: function () {
+    this.initPage();
   }
 }
 </script>

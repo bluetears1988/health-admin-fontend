@@ -164,7 +164,7 @@
                       .then(function (response) {
                         console.log(response);
                         that.$message({
-                          message: '添加成功！',
+                          message: '更新成功！',
                           type: 'success'
                         });
                         that.$router.push({ name: 'cardlist'})
@@ -178,6 +178,10 @@
               this.$ajax.post('/api/card', this.deleteExtra(this.form))
                       .then(function (response) {
                         console.log(response);
+                        that.$message({
+                          message: '添加成功！',
+                          type: 'success'
+                        });
                         that.$router.push({ name: 'cardlist'})
                       })
                       .catch(function (error) {

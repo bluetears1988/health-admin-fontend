@@ -56,11 +56,38 @@
         </el-form-item>
 
         <el-form-item label="机构环境照片(重复上传会覆盖)" required>
-            <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/">
+            <!-- <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/">
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
               <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
-            </el-upload>
+            </el-upload> -->
+            <!-- <el-upload
+              class="upload-demo"
+              ref="upload"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :file-list="form.fileList"
+              :auto-upload="false"
+              :before-upload='beforeAvatarUpload'
+              :on-error="handleError"
+              list-type="picture">
+              <el-button size="small" type="primary" slot="trigger">选取文件</el-button>
+              <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload> -->
+            <el-upload
+              action="http://upload.qiniup.com"  
+              :drag="true"
+              :on-success="handleAvatarSuccess"
+              :on-error="handleError"
+              :before-upload="beforeAvatarUpload"
+              :data="postData">
+              <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
+              <i class="el-icon-upload"></i>
+              <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+              <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过2M</div>
+          </el-upload>
         </el-form-item>
         <el-form-item label="机构介绍" required >
             <el-input
@@ -132,6 +159,9 @@
           type: 4,
           extra:{}
         },
+        postData: {
+            token: 'your token'
+        },
         // threshold:{
         //   tizhongzhishu: {'min':18.5,'max':23.99},
         //   shousuoya: {'min':90,'max':139},
@@ -145,6 +175,35 @@
       }
     }, 
     methods: {
+      handleAvatarSuccess(res, file) {   //上传成功后在图片框显示图片
+        this.form.imageUrl ='http://oxsopdu8e.bkt.clouddn.com/'+ res.key
+        console.log(res)
+      },
+      handleError(res) {   //显示错误
+        console.log(res)
+      },
+      beforeAvatarUpload(file) {    //在图片提交前进行验证
+        const isJPG = file.type === 'image/jpeg'
+        const isPNG = file.type === 'image/png'
+        const isLt2M = file.size / 1024 / 1024 < 2
+
+        if (!isJPG&&!isPNG) {
+          this.$message.error('上传图片只能是 JPG/PNG 格式!')
+        }
+        if (!isLt2M) {
+          this.$message.error('上传图片大小不能超过 2MB!')
+        }
+        return isJPG && isPNG && isLt2m
+      },
+      submitUpload() {
+        this.$refs.upload.submit();
+      },
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePreview(file) {
+        console.log(file);
+      },
       deleteExtra: function(json){
           var j = JSON.parse(JSON.stringify(json));
           delete j.extra;
@@ -161,7 +220,7 @@
                       .then(function (response) {
                         console.log(response);
                         that.$message({
-                          message: '添加成功！',
+                          message: '更新成功！',
                           type: 'success'
                         });
                         that.$router.push({ name: 'organizelist'})
@@ -175,6 +234,10 @@
               this.$ajax.post('/api/institution', this.deleteExtra(this.form))
                       .then(function (response) {
                         console.log(response);
+                        that.$message({
+                          message: '添加成功！',
+                          type: 'success'
+                        });
                         that.$router.push({ name: 'organizelist'})
                       })
                       .catch(function (error) {
@@ -205,7 +268,9 @@
                         bprice:'',
                         telephone:'',
                         introduce:'',
-                        num:'',};
+                        num:'',
+                        imageUrl:''
+                        };
           // console.dirxml(that.form);
           var queryId = that.$route.query.id;
           if(queryId){
