@@ -160,7 +160,7 @@
           extra:{}
         },
         postData: {
-            token: 'your token'
+            token: 'OGP8PkJuWP4tLEKTuhKIJqv9VjOqVVjaH8WfHUnv:F1IFmeVIlNo68-XJ_aV905Omgs4=:eyJzY29wZSI6ImFmYW1pbHloZWFsdGgyMDE4IiwiZGVhZGxpbmUiOjE4Njc5NTk4NDB9'
         },
         // threshold:{
         //   tizhongzhishu: {'min':18.5,'max':23.99},
