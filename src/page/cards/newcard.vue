@@ -4,7 +4,6 @@
         <el-form-item label="套餐名字" prop="name" >
             <el-input v-model.trim="form.name" lazy></el-input>
         </el-form-item>
-
         <!-- <el-form-item label="套餐ID" required prop="pkgid">
             <el-input v-model.trim="form.id" lazy></el-input>
         </el-form-item> -->
@@ -99,11 +98,24 @@
             </el-select>
         </el-form-item>
         <el-form-item label="套餐相关照片(最多三张)">
-            <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/">
+            <el-upload
+              class="upload-demo"
+              drag
+              action="http://upload.qiniup.com"
+              multiple
+              :on-success="handleAvatarSuccess"
+              :on-error="handleError"
+              :before-upload="beforeAvatarUpload"
+              :file-list="images"
+              list-type="picture"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :data="postData">
+              <img v-if="form.images" :src="form.images[0]" class="avatar"/>
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
               <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
-            </el-upload>
+          </el-upload>
         </el-form-item>
 
         <el-form-item>
@@ -118,26 +130,27 @@
   export default {
     name: 'newcardForm',
     data: function () {
-      // var validators = {
-      //     number: function (val) {
-      //         return /^[1-9]\d*$/.test(val);
-      //     },
-      //     // shousuoya: function (val) {
-      //     //     // return /^[A-Za-z0-9_\-\u4e00-\u9fa5]{1,10}$/.test(val);
-      //     //     return !(val > 139 || v < 90);
-      //     // },
-      //     // shuzhangya: function (val) {
-      //     //     // return /^[1-9]\d*$/.test(val);
-      //     //     return !(val > 89 || v < 60);
-      //     // }
-      // };
-
       return {
         radio_sexy:3,
         form: {
-          extra:{},
-          gender:3
+           extra:{},
+           gender:3,
+           city:'',
+           people:'',
+           name:'',
+           feature:[],
+           bprice:'',
+           price:'',
+           projectNum:'',
+           project:[],
+           images:[],
+           institutionNum:'',
+           institutions:[], 
         },
+        postData: {
+            token: 'OGP8PkJuWP4tLEKTuhKIJqv9VjOqVVjaH8WfHUnv:F1IFmeVIlNo68-XJ_aV905Omgs4=:eyJzY29wZSI6ImFmYW1pbHloZWFsdGgyMDE4IiwiZGVhZGxpbmUiOjE4Njc5NTk4NDB9'
+        },
+        images:[],
         rules: {
           name:[
             {required:true,message:'必填项',trigger:'blur'}
@@ -146,6 +159,37 @@
       }
     },
     methods: {
+      handleRemove(file, fileList) {
+        this.form.images.splice(file[name],1);
+        console.dirxml('images:',this.form.images);
+        console.log(file, fileList);
+      },
+      handlePreview(file) {
+        console.log(file);
+      },
+      handleAvatarSuccess(res, file) {   //上传成功后在图片框显示图片
+        this.form.images.push('http://oxsopdu8e.bkt.clouddn.com/'+ res.key);
+        console.log(res)
+      },
+      handleError(res) {   //显示错误
+        console.log(res)
+      },
+      beforeAvatarUpload(file) {    //在图片提交前进行验证
+        const isJPG = file.type === 'image/jpeg'
+        const isPNG = file.type === 'image/png'
+        const isLt2M = file.size / 1024 / 1024 < 2
+
+        if (!isJPG&&!isPNG) {
+          this.$message.error('上传图片只能是 JPG/PNG 格式!')
+        }
+        if (!isLt2M) {
+          this.$message.error('上传图片大小不能超过 2MB!')
+        }
+        return (isJPG || isPNG) && isLt2M
+      },
+      submitUpload() {
+        this.$refs.upload.submit();
+      },
       remoteMethod: function(){},
       loading: function(){},
       deleteExtra: function(json){
@@ -157,6 +201,7 @@
         var that = this;
         let form = this.$refs["form"];
         console.dirxml(this.$qs.stringify(this.deleteExtra(this.form)));
+        console.dirxml(this.deleteExtra(this.form));
         form.validate((valid) => {
           if (valid) {
             if(this.$route.query.id){
@@ -173,7 +218,6 @@
                         that.$message.error(error);
                         console.log(error);
                       });
-
             }else{
               this.$ajax.post('/api/card', this.deleteExtra(this.form))
                       .then(function (response) {
@@ -203,41 +247,57 @@
           ])
         .then(this.$ajax.spread(function (cityResp, projectResp, featureResp) {
             // 上面两个请求都完成后，才执行这个回调方法
-          that.form = {extra:{cities:cityResp.data.data,projects:projectResp.data.data,
-                              features:featureResp.data.data,
-                              },
-                        city:'',
-                        people:'',
-                        name:'',
-                        gender:'',
-                        feature:[],
-                        bprice:'',
-                        price:'',
-                        projectNum:'',
-                        project:[],
-                        institutionNum:'',
-                        institutions:[], };
+
+          that.form = {extra:{cities:cityResp.data.data,projects:projectResp.data.data,features:featureResp.data.data,},
+                         city:'',
+                         people:'',
+                         name:'',
+                         gender:'',
+                         feature:[],
+                         bprice:'',
+                         price:'',
+                         projectNum:'',
+                         project:[],
+                         images:[],
+                         institutionNum:'',
+                         institutions:[], };
+            
           var queryId = that.$route.query.id;
           if(queryId){
             that.$ajax.get('/api/card',{params:{_id:queryId}}).then((response) =>{
-              // console.dirxml(response.data.data);
-              Object.assign(that.form, response.data.data[0]);
+              console.dirxml(response.data.data[0]);
+              var res = response;
+              that.$ajax.get('/api/institution',{params:{city:res.data.data[0].city}}).then((response) =>{
+                that.$store.dispatch('setOrgs', response.data.data);
+                
+                Object.assign(that.form, res.data.data[0]);
+                console.dirxml(that.form);
+                
+                for(let j = 0,len=that.form.images.length; j < len; j++) {
+                  that.images.push({name:j,url:that.form.images[j]});
+                }
+
+              });
             });
-            // Object.assign(that.form.extra, {institutions:response.data.data});
           }
 
-          console.dirxml(that.form);
+          // console.dirxml(that.form);
         }
         ));
-        
       },
       orgInit(opt){
         var that = this;
+        if(that.$route.query.id){
+          return true;
+        }
+
         this.$ajax.get('/api/institution',{params:{city:opt}}).then((response) =>{
-          // Object.assign(that.form.extra, {institutions:response.data.data});
           that.$store.dispatch('setOrgs', response.data.data);
         });
       },
+    },
+    watch:{
+      '$route':'initPage'
     },
     computed: mapState({
       orgs: state => state.orgs,
@@ -249,4 +309,8 @@
 
 </script>
 <style>
+.avatar{
+  float: left;
+  height: 100%;
+}
 </style>

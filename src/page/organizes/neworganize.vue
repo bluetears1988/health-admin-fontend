@@ -64,7 +64,7 @@
             <!-- <el-upload
               class="upload-demo"
               ref="upload"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              action="http://upload.qiniup.com"
               :on-preview="handlePreview"
               :on-remove="handleRemove"
               :file-list="form.fileList"
@@ -76,7 +76,7 @@
               <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
               <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload> -->
-            <el-upload
+            <!-- <el-upload
               action="http://upload.qiniup.com"  
               :drag="true"
               :on-success="handleAvatarSuccess"
@@ -87,6 +87,19 @@
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
               <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过2M</div>
+          </el-upload> -->
+          <el-upload
+            class="upload-demo"
+            drag
+            action="http://upload.qiniup.com"
+            :on-success="handleAvatarSuccess"
+            :on-error="handleError"
+            :before-upload="beforeAvatarUpload"
+            :data="postData">
+            <img v-if="form.img" :src="form.img" class="avatar"/>
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
         </el-form-item>
         <el-form-item label="机构介绍" required >
@@ -100,14 +113,17 @@
         <el-form-item label="旗下体检套餐数 （单位：个）" required >
             <el-input v-model.trim="form.num" lazy number></el-input>
         </el-form-item>
-        <el-form-item label="添加旗下套餐" required >
-            <el-row>
+        <el-form-item label="添加旗下套餐" required ref="dynamicCards">
+          <!-- <el-button @click="resetCards('dynamicCards')" type="text">重置</el-button> -->
+          <el-button @click="addCard" type="text">新增套餐<i class="el-icon-plus"></i></el-button>
+            <el-row v-for="(card, index) in dynamicCards.cards" :key="index">
               <el-col :span="4">
                 <el-select 
-                  v-model="form.package"
+                  v-model="card.name"
                   clearable
                   filterable 
-                  placeholder="请选择套餐">
+                  :placeholder="index+'-请选择套餐'"
+                  @change='(value) => getCardInfo(value, index)'>
                   <el-option
                     v-for="item in cards"
                     :key="item.name"
@@ -117,15 +133,14 @@
                 </el-select>
                 </el-col>
                 <el-col :span="4">
-                  <el-input v-model.trim="form.price" placeholder="请输入套餐价格" lazy></el-input>
+                  <el-input v-model.trim="card.real_price" :placeholder="index+'-请输入套餐价格'" lazy></el-input>
                 </el-col>
                 <el-col :span="4">
-                  <i class="el-icon-plus"></i>
+                  <el-button @click.prevent="removeCard(card)" type="text">删除</el-button>
                 </el-col>
               <el-col :span="12"><div class="grid-content bg-purple-light"></div></el-col>
             </el-row>
         </el-form-item>
-          
         <el-form-item>
             <el-button type="primary" @click.native.prevent="onSubmit">提交</el-button>
         </el-form-item>
@@ -138,21 +153,15 @@
   export default {
     name: 'newcard',
     data: function () {
-      // var validators = {
-      //     number: function (val) {
-      //         return /^[1-9]\d*$/.test(val);
-      //     },
-      //     // shousuoya: function (val) {
-      //     //     // return /^[A-Za-z0-9_\-\u4e00-\u9fa5]{1,10}$/.test(val);
-      //     //     return !(val > 139 || v < 90);
-      //     // },
-      //     // shuzhangya: function (val) {
-      //     //     // return /^[1-9]\d*$/.test(val);
-      //     //     return !(val > 89 || v < 60);
-      //     // }
-      // };
-
       return {
+        dynamicCards:{
+          cards:[{
+            name:'',
+            img:'',
+            price:'',
+            real_price:''
+          }]
+        },
         introduce:'',
         city:'',
         form: {
@@ -162,11 +171,6 @@
         postData: {
             token: 'OGP8PkJuWP4tLEKTuhKIJqv9VjOqVVjaH8WfHUnv:F1IFmeVIlNo68-XJ_aV905Omgs4=:eyJzY29wZSI6ImFmYW1pbHloZWFsdGgyMDE4IiwiZGVhZGxpbmUiOjE4Njc5NTk4NDB9'
         },
-        // threshold:{
-        //   tizhongzhishu: {'min':18.5,'max':23.99},
-        //   shousuoya: {'min':90,'max':139},
-        //   shuzhangya: {'min':60,'max':89}
-        // },
         rules: {
           name:[
             {required:true,message:'必填项',trigger:'blur'}
@@ -175,8 +179,26 @@
       }
     }, 
     methods: {
+      removeCard(item) {
+        var index = this.dynamicCards.cards.indexOf(item)
+        //var index_f = this.form.cards.indexOf(item)
+        if (index !== -1) {
+          this.dynamicCards.cards.splice(index, 1)
+        }
+        /*if (index_f !== -1) {
+          this.form.cards.splice(index, 1)
+        }*/
+      },
+      addCard() {
+        this.dynamicCards.cards.push({
+          name:'',
+          img:'',
+          price:'',
+          real_price:''
+        });
+      },
       handleAvatarSuccess(res, file) {   //上传成功后在图片框显示图片
-        this.form.imageUrl ='http://oxsopdu8e.bkt.clouddn.com/'+ res.key
+        this.form.img = 'http://oxsopdu8e.bkt.clouddn.com/'+ res.key;
         console.log(res)
       },
       handleError(res) {   //显示错误
@@ -193,17 +215,12 @@
         if (!isLt2M) {
           this.$message.error('上传图片大小不能超过 2MB!')
         }
-        return isJPG && isPNG && isLt2m
+
+        return (isJPG || isPNG) && isLt2M
       },
-      submitUpload() {
-        this.$refs.upload.submit();
-      },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file) {
-        console.log(file);
-      },
+      // submitUpload() {
+      //   this.$refs.upload.submit();
+      // },
       deleteExtra: function(json){
           var j = JSON.parse(JSON.stringify(json));
           delete j.extra;
@@ -212,40 +229,40 @@
       onSubmit: function(){
         var that = this;
         let form = this.$refs["form"];
-        console.dirxml(this.$qs.stringify(this.deleteExtra(this.form)));
         form.validate((valid) => {
           if (valid) {
-            if(this.$route.query.id){
-              this.$ajax.put('/api/institution/' + this.$route.query.id, this.deleteExtra(this.form))
-                      .then(function (response) {
-                        console.log(response);
-                        that.$message({
-                          message: '更新成功！',
-                          type: 'success'
-                        });
-                        that.$router.push({ name: 'organizelist'})
-                      })
-                      .catch(function (error) {
-                        that.$message.error(error);
-                        console.log(error);
-                      });
+            //Object.assign(this.form, this.dynamicCards);
+            this.form.cards = this.dynamicCards.cards;
+            console.dirxml(this.deleteExtra(this.form));
+             if(this.$route.query.id){
+               this.$ajax.put('/api/institution/' + this.$route.query.id, this.deleteExtra(this.form))
+                       .then(function (response) {
+                         //console.log(response);
+                         that.$message({
+                           message: '更新成功！',
+                           type: 'success'
+                         });
+                         that.$router.push({ name: 'organizelist'})
+                       })
+                       .catch(function (error) {
+                         that.$message.error(error);
+                         console.log(error);
+                       });
 
-            }else{
-              this.$ajax.post('/api/institution', this.deleteExtra(this.form))
-                      .then(function (response) {
-                        console.log(response);
-                        that.$message({
-                          message: '添加成功！',
-                          type: 'success'
-                        });
-                        that.$router.push({ name: 'organizelist'})
-                      })
-                      .catch(function (error) {
-                        console.log(error);
-                      });
-            }
-            
-
+             }else{
+               this.$ajax.post('/api/institution', this.deleteExtra(this.form))
+                       .then(function (response) {
+                         //console.log(response);
+                         that.$message({
+                           message: '添加成功！',
+                           type: 'success'
+                         });
+                         that.$router.push({ name: 'organizelist'})
+                       })
+                       .catch(function (error) {
+                         console.log(error);
+                       });
+             }
           } else {
             console.log('error submit!!');
             return false;
@@ -261,22 +278,28 @@
         .then(this.$ajax.spread(function (cityResp) {
             // 上面两个请求都完成后，才执行这个回调方法
           that.form =  {extra:{cities:cityResp.data.data},
-                        city:'',
-                        type:'',
-                        name:'',
-                        address:'', 
-                        bprice:'',
-                        telephone:'',
-                        introduce:'',
-                        num:'',
-                        imageUrl:''
-                        };
-          // console.dirxml(that.form);
+                         city:'',
+                         type:'',
+                         name:'',
+                         address:'', 
+                         bprice:'',
+                         telephone:'',
+                         introduce:'',
+                         num:'',
+                         img:''
+                         };
           var queryId = that.$route.query.id;
           if(queryId){
             that.$ajax.get('/api/institution',{params:{_id:queryId}}).then((response) =>{
-              // console.dirxml(response.data.data);
-              Object.assign(that.form, response.data.data[0]);
+              var res = response;
+              that.$ajax.get('/api/card',{params:{city:res.city}}).then((response) =>{
+                that.$store.dispatch('setCards', response.data.data);
+
+                Object.assign(that.form, res.data.data[0]);
+                Object.assign(that.dynamicCards.cards, res.data.data[0].cards);
+
+              });
+              
             });
             // Object.assign(that.form.extra, {institutions:response.data.data});
           }
@@ -287,34 +310,22 @@
       cardInit(opt){
         var that = this;
         this.$ajax.get('/api/card',{params:{city:opt}}).then((response) =>{
-          // that.form.extra.cards = response.data.data;
           that.$store.dispatch('setCards', response.data.data);
 
         });
       },
-      save: function(form){
-        this.$refs.form.validate((valid) => {
-          if (valid) {
-            // alert('submit!');
-            var mid_form = {};
-            Object.assign(mid_form, this.form);
+      getCardInfo(opt, index){
+        //console.log("opt:index:",opt, index);
+        var that = this;
+        this.$ajax.get('/api/card',{params:{city:this.form.city,name:opt}}).then((response) =>{
+          that.dynamicCards.cards[index].img = response.data.data[0].images[0];
+          that.dynamicCards.cards[index].price = response.data.data[0].price;
+          //console.dirxml(that.dynamicCards);
+          // that.form.extra.cards = response.data.data;
+          // that.$store.dispatch('setCards', response.data.data);
 
-            this.addunit(mid_form);
-            console.dirxml(mid_form);
-            this.$emit('transferForm', mid_form);
-
-            this.disabledInput = true;
-            this.disableButton = false;
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
         });
-      },
-      edit: function(){
-        this.disabledInput = false;
-        this.disableButton = true;
-      },
+      }
     },
     computed: mapState({
       cards: state => state.cards,
@@ -325,4 +336,8 @@
 }
 </script>
 <style>
+.avatar{
+  float: left;
+  height: 100%;
+}
 </style>

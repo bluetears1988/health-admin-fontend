@@ -11,8 +11,16 @@
     <el-table-column prop="institutionNum" label="开通机构数目" ></el-table-column>
     <el-table-column prop="institutions" label="开通机构" ></el-table-column>
     <el-table-column prop="feature" label="套餐特色" ></el-table-column>
-    <el-table-column prop="gender" label="适用性别" ></el-table-column>
-    <el-table-column prop="images" label="相关图片" ></el-table-column>
+    <el-table-column prop="gender" label="适用性别" >
+        <template scope="scope">
+        {{scope.row.gender | sexy}}
+        </template>
+    </el-table-column>
+    <el-table-column prop="images" label="相关图片" >
+        <template scope="scope">
+            <img v-if="scope.row.images"  v-for="image in scope.row.images" :src="image" style="width:50px;height:50px" />
+        </template>
+    </el-table-column>
     <el-table-column label="操作">
         <template scope="scope">
             <el-button size="small" @click.native="itemAction(scope.row._id,'edit')" >修改</el-button>
@@ -41,18 +49,35 @@ export default {
             })
         },
         itemAction:function(id, action){
-                if(action=="edit") {
-                    this.$router.push({ name: 'newcard', query: { id: id }})
-                } else if(action=="delete") {
-                    this.$ajax.delete('/api/card/'+ id).then((response) =>{
-                        // this.$message($util.message.toLocale(this,response.data));
-                        // this.pageRequest();
+            var that = this;
+            if(action=="edit") {
+                this.$router.push({ name: 'newcard', query: { id: id }})
+            }else if(action=="delete") {
+                this.$ajax.delete('/api/card/'+ id).then((response) =>{
+                    that.$message({
+                      message: '删除成功！',
+                      type: 'success'
                     });
-                }
+                    // that.$router.push({ name: 'cardlist'})
+                    // this.$router.go(0);
+                    // that.$router.go({name: 'cardlist'});
+                });
             }
+        }
     },
     created: function () {
       this.initPage();
+    },
+    filters:{
+        sexy: function(val){
+            if(val === 3){
+                return "男女通用"
+            }else if(val === 1){
+                return "女"
+            }else if(val === 2){
+                return "男"
+            }
+        }
     }
 }
 </script>

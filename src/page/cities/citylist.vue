@@ -36,19 +36,13 @@ export default {
                 if(action=="edit") {
                     this.$router.push({ name: 'city', query: { id: id }})
                 } else if(action=="delete") {
-                    // this.$ajax.delete('/api/cities/:id',{params:{id:id}}).then((response) =>{
                         this.$ajax.delete('/api/cities/'+ id).then((response) =>{
-                            // this.$message($util.message.toLocale(this,response.data));
-                            // this.pageRequest();
                             that.$message({
                               message: '删除成功！',
                               type: 'success'
                             });
                             that.$router.push({ name: 'citylist'})
-                            });
-                    // this.confirmDelete().then(() => {
-                        
-                    // }).catch();
+                        });
                 }
             }
     },

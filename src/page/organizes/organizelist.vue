@@ -5,13 +5,17 @@
     <el-table-column prop="city" label="所在城市" ></el-table-column>
     <el-table-column prop="address" label="机构地址" ></el-table-column>
     <el-table-column prop="telephone" label="机构电话" ></el-table-column>
-    <el-table-column prop="bprice" label="最低价格" ></el-table-column>
+    <el-table-column prop="bprice" label="最低价格(元)" ></el-table-column>
     <!-- <el-table-column prop="price" label="市场价格" ></el-table-column> -->
     <el-table-column prop="num" label="体检项目数目" ></el-table-column>
     <!-- <el-table-column prop="project" label="体检项目" ></el-table-column> -->
     <!-- <el-table-column prop="onum" label="开通机构数目" ></el-table-column> -->
     <!-- <el-table-column prop="oran" label="开通机构" ></el-table-column> -->
-    <el-table-column prop="images" label="相关图片" ></el-table-column>
+    <el-table-column label="相关图片" >
+        <template scope="scope">
+            <img v-if="scope.row.img" :src="scope.row.img" style="width:50px;height:50px" />
+        </template>
+    </el-table-column>
     <el-table-column label="操作">
         <template scope="scope">
             <el-button size="small" @click.native="itemAction(scope.row._id,'edit')" >修改</el-button>
@@ -44,8 +48,11 @@ export default {
                     this.$router.push({ name: 'neworganize', query: { id: id }})
                 } else if(action=="delete") {
                     this.$ajax.delete('/api/institution/'+ id).then((response) =>{
-                        // this.$message($util.message.toLocale(this,response.data));
-                        // this.pageRequest();
+                        that.$message({
+                          message: '删除成功！',
+                          type: 'success'
+                        });
+                        that.$router.push({ name: 'organizelist'})
                     });
                 }
             }

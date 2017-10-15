@@ -77,19 +77,36 @@
         console.dirxml(this.$qs.stringify(this.deleteExtra(this.form)));
         form.validate((valid) => {
           if (valid) {
-            this.$ajax.post('/api/project', this.deleteExtra(this.form))
+            if(this.$route.query.id){
+              this.$ajax.put('/api/project/' + this.$route.query.id, this.deleteExtra(this.form))
                       .then(function (response) {
                         console.log(response);
                         that.$message({
-                          message: '添加成功！',
+                          message: '更新成功！',
                           type: 'success'
                         });
                         that.$router.push({ name: 'projectlist'})
                       })
                       .catch(function (error) {
-                        console.log(error);
                         that.$message.error(error);
+                        console.log(error);
                       });
+            }else{
+              this.$ajax.post('/api/project', this.deleteExtra(this.form))
+                  .then(function (response) {
+                    console.log(response);
+                    that.$message({
+                      message: '添加成功！',
+                      type: 'success'
+                    });
+                    that.$router.push({ name: 'projectlist'})
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                    that.$message.error(error);
+                  });
+            }
+            
 
           } else {
             console.log('error submit!!');
@@ -97,8 +114,22 @@
           }
         });
       },
-    created: function () {
-    }
+      initPage(){
+        var that = this;
+        var queryId = that.$route.query.id;
+        if(queryId){
+          that.$ajax.get('/api/project',{params:{_id:queryId}}).then((response) =>{
+              console.dirxml(response.data.data);
+              // Object.assign(that.form, response.data.data[0]);
+              that.form = response.data.data[0];
+              console.dirxml(that.form);
+            });
+          // Object.assign(that.form.extra, {institutions:response.data.data});
+        }
+      }
+  },
+  created: function () {
+    this.initPage();
   }
 }
 </script>
