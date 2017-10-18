@@ -16,6 +16,7 @@
         {{scope.row.gender | sexy}}
         </template>
     </el-table-column>
+    <el-table-column prop="sales" label="销量" ></el-table-column>
     <el-table-column prop="images" label="相关图片" >
         <template scope="scope">
             <img v-if="scope.row.images"  v-for="image in scope.row.images" :src="image" style="width:50px;height:50px" />

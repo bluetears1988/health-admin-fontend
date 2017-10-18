@@ -46,6 +46,18 @@
         <el-form-item label="详细地址" required>
             <el-input v-model.trim="form.address" lazy></el-input>
         </el-form-item>
+
+        <el-form-item label="经纬度('longitude,latitude')">
+            <el-input v-model.trim="form.location" lazy></el-input>
+        </el-form-item>
+
+        <!-- <el-form-item label="经度(longitude)" required>
+            <el-input v-model.trim="form.location.Longitude" lazy></el-input>
+        </el-form-item>
+
+        <el-form-item label="纬度(latitude)" required>
+            <el-input v-model.trim="form.location.Latitude" lazy></el-input>
+        </el-form-item> -->
         
         <el-form-item label="联系电话" required>
             <el-input v-model.trim="form.telephone" lazy></el-input>
@@ -233,6 +245,7 @@
           if (valid) {
             //Object.assign(this.form, this.dynamicCards);
             this.form.cards = this.dynamicCards.cards;
+            //this.form.location = this.form.location.split(',');
             console.dirxml(this.deleteExtra(this.form));
              if(this.$route.query.id){
                this.$ajax.put('/api/institution/' + this.$route.query.id, this.deleteExtra(this.form))
@@ -286,15 +299,16 @@
                          telephone:'',
                          introduce:'',
                          num:'',
-                         img:''
-                         };
+                         img:'',
+                         location:''
+                       };
           var queryId = that.$route.query.id;
           if(queryId){
             that.$ajax.get('/api/institution',{params:{_id:queryId}}).then((response) =>{
               var res = response;
               that.$ajax.get('/api/card',{params:{city:res.city}}).then((response) =>{
                 that.$store.dispatch('setCards', response.data.data);
-
+                res.data.data[0].location = res.data.data[0].location.join(',');
                 Object.assign(that.form, res.data.data[0]);
                 Object.assign(that.dynamicCards.cards, res.data.data[0].cards);
 
