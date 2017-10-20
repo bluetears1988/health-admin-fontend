@@ -17,6 +17,10 @@
             <el-input v-model.trim="form.grade" lazy number></el-input>
         </el-form-item>
 
+        <el-form-item label="经纬度('longitude,latitude')">
+            <el-input v-model.trim="form.location" lazy></el-input>
+        </el-form-item>
+
         <el-form-item label="父城市行政区划代码" required prop="pcode">
             <el-input v-model.trim="form.pcode" lazy></el-input>
         </el-form-item>
@@ -120,6 +124,9 @@
           that.$ajax.get('/api/cities',{params:{_id:queryId}}).then((response) =>{
             console.dirxml(response.data.data);
             // Object.assign(that.form, response.data.data[0]);
+            if(response.data.data[0].location){
+              response.data.data[0].location = response.data.data[0].location.join(',');
+            }
             that.form = response.data.data[0];
             console.dirxml(that.form);
           });

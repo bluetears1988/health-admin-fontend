@@ -97,6 +97,14 @@
               </el-option>
             </el-select>
         </el-form-item>
+        <el-form-item label="套餐简介" required >
+            <el-input
+              type="textarea"
+              :autosize="{ minRows: 2, maxRows: 4}"
+              placeholder="请输入内容"
+              v-model="form.introduce">
+            </el-input>
+        </el-form-item>
         <el-form-item label="套餐相关照片(最多三张)">
             <el-upload
               class="upload-demo"
@@ -141,6 +149,7 @@
            feature:[],
            bprice:'',
            price:'',
+           introduce:'',
            projectNum:'',
            project:[],
            images:[],
